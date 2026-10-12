@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flashcards — SkillGraph</title>
+  <meta name="description" content="Review DSA and coding concepts with interactive 3D flashcards.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle Navigation"><i class="bi bi-list"></i></button>
+        <a href="index.html" class="brand-link">
+          <div class="brand-icon"><i class="bi bi-graph-up-arrow"></i></div>
+          <div class="brand-text">
+            <span class="brand-name">SkillGraph</span>
+            <span class="brand-sub">CODING PRACTICE PLATFORM</span>
+          </div>
+        </a>
+      </div>
+      <nav class="header-nav" id="header-nav">
+        <a href="index.html" class="nav-link">Dashboard</a>
+        <a href="roadmap.html" class="nav-link">Roadmap</a>
+        <a href="flashcards.html" class="nav-link active">Flashcards</a>
+        <a href="practice.html" class="nav-link">Practice</a>
+        <a href="mistakes.html" class="nav-link">Mistakes</a>
+        <a href="progress.html" class="nav-link">Progress</a>
+      </nav>
+      <div class="header-right">
+        <button class="btn btn-outline btn-sm logout-btn auth-only" type="button">Sign Out</button>
+        <a href="login.html" class="btn btn-primary btn-sm guest-only" style="display:none;">Sign In</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <div class="main-container">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <div>
+          <h2 class="fw-bold mb-1">Flashcards Revision</h2>
+          <p class="text-secondary mb-0">Revise core DSA patterns and computer science fundamentals.</p>
+        </div>
+        <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#addFlashcardModal">+ Add Flashcard</button>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-4">
+          <div class="stat-card">
+            <div class="stat-icon info"><i class="bi bi-card-text"></i></div>
+            <div class="stat-data">
+              <h3 id="cards-total-count">0</h3>
+              <p>Total Cards</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="stat-card">
+            <div class="stat-icon success"><i class="bi bi-check2-circle"></i></div>
+            <div class="stat-data">
+              <h3 id="cards-reviewed-count" class="text-success">0</h3>
+              <p>Reviewed</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="stat-card">
+            <div class="stat-icon accent"><i class="bi bi-hourglass-split"></i></div>
+            <div class="stat-data">
+              <h3 id="cards-remaining-count" class="text-warning">0</h3>
+              <p>Remaining</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-3 mb-3" aria-label="Filter flashcards">
+        <div class="row g-3 align-items-end">
+          <div class="col-12 col-md-6">
+            <label class="form-label text-secondary small fw-semibold text-uppercase mb-1" for="flashcard-cat-filter">Category</label>
+            <select class="form-select" id="flashcard-cat-filter">
+              <option value="">All Categories</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label text-secondary small fw-semibold text-uppercase mb-1" for="flashcard-status-filter">Review Status</label>
+            <select class="form-select" id="flashcard-status-filter">
+              <option value="all">All Flashcards</option>
+              <option value="reviewed">Reviewed Only</option>
+              <option value="unreviewed">Not Reviewed Yet</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div id="flashcard-empty-state" class="empty-state card" style="display:none;">
+        <i class="bi bi-card-text"></i>
+        <h4>No Flashcards Found</h4>
+        <p>No cards match your filter. Try choosing "All Categories" or add a new card.</p>
+      </div>
+
+      <div id="flashcard-active-view" class="mx-auto" style="max-width: 680px;">
+        <div class="flashcard-scene mb-3" style="max-width: 100%;">
+          <div class="flashcard-object" id="flashcard-object">
+            <div class="flashcard-face flashcard-face-front">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="badge badge-starter" id="flashcard-category-badge">General</span>
+                <span class="badge" id="flashcard-status-badge">Not Reviewed</span>
+              </div>
+              <div class="flashcard-content-text" id="flashcard-front-text">Question</div>
+              <span class="flashcard-hint"><i class="bi bi-arrow-repeat"></i> Click card or Flip button to reveal answer</span>
+            </div>
+            <div class="flashcard-face flashcard-face-back">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="badge badge-starter" id="flashcard-back-category">General</span>
+                <div id="flashcard-card-actions"></div>
+              </div>
+              <div class="flashcard-content-text" id="flashcard-back-text">Answer</div>
+              <span class="flashcard-hint"><i class="bi bi-arrow-repeat"></i> Click card to flip back</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card p-3">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="d-flex gap-2">
+              <button class="btn btn-outline btn-sm" id="flashcard-prev-btn" type="button"><i class="bi bi-chevron-left"></i> Previous</button>
+              <button class="btn btn-outline btn-sm" id="flashcard-next-btn" type="button">Next <i class="bi bi-chevron-right"></i></button>
+            </div>
+            <span class="small fw-semibold text-secondary" id="flashcard-counter">Card 0 of 0</span>
+            <div class="d-flex gap-2">
+              <button class="btn btn-outline btn-sm" id="flashcard-flip-btn" type="button"><i class="bi bi-arrow-repeat"></i> Flip Card</button>
+              <button class="btn btn-primary btn-sm" id="flashcard-review-btn" type="button"><i class="bi bi-check2"></i> Mark as Reviewed</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal fade" id="addFlashcardModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="form-add-flashcard">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold">Add Custom Flashcard</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="add-card-category" class="form-label">Category</label>
+              <input type="text" class="form-control" id="add-card-category" placeholder="e.g. Java, Trees, Dynamic Programming" required>
+            </div>
+            <div class="mb-3">
+              <label for="add-card-question" class="form-label">Question / Concept</label>
+              <textarea class="form-control" id="add-card-question" rows="3" placeholder="Enter the prompt or question..." required></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="add-card-answer" class="form-label">Answer / Explanation</label>
+              <textarea class="form-control" id="add-card-answer" rows="4" placeholder="Enter the key takeaway or explanation..." required></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Flashcard</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="editFlashcardModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="form-edit-flashcard">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold">Edit Flashcard</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="edit-card-id">
+            <div class="mb-3">
+              <label for="edit-card-category" class="form-label">Category</label>
+              <input type="text" class="form-control" id="edit-card-category" required>
+            </div>
+            <div class="mb-3">
+              <label for="edit-card-question" class="form-label">Question / Concept</label>
+              <textarea class="form-control" id="edit-card-question" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="edit-card-answer" class="form-label">Answer / Explanation</label>
+              <textarea class="form-control" id="edit-card-answer" rows="4" required></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
